@@ -236,7 +236,9 @@ export default {
       }
 
       
-      arr[index].push(obj);
+      
+      let newIndex = (this.currentPage - 1)*this.currentPage+index;
+      arr[newIndex].push(obj);
 
       this.user = arr;
       localStorage.setItem("userInfo", JSON.stringify(this.user));
