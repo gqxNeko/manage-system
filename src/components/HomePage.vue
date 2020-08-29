@@ -1,79 +1,58 @@
 <template>
-  <div class="homePage">
-    <div v-for="(items,index) in pageNote" :key="items.id" class="article">
-      <div class="article-item">
-        <div>
-          <h1 class="head">{{items.articleName}}</h1>
-          <div class="name">作者：{{items.name}}</div>
-          <div
-            class="content"
-            :class="pageNote[index].fold?'fold':'unfold'"
-            v-html="items.content"
-          >{{items.content}}</div>
-          <div
-            class="show"
-            @click="changeShow(index)"
-            v-if="isShow(index)"
-          >{{pageNote[index].fold?'展开':'收起'}}</div>
+<div class="homePage">
+  <div v-for="(items,index) in pageNote" :key="items.id" class="article">
+    <div class="article-item">
+      <div>
+        <h1 class="head">{{items.articleName}}</h1>
+        <div class="name">作者：{{items.name}}</div>
+        <div class="content" :class="pageNote[index].fold?'fold':'unfold'" v-html="items.content">{{items.content}}</div>
+        <div class="show" @click="changeShow(index)" v-if="isShow(index)">{{pageNote[index].fold?'展开':'收起'}}</div>
+      </div>
+
+      <div class="communicate">
+        <div class="info">
+          <div class="like" v-if="false">
+            <i class="el-icon-star-on"></i>
+            <span>赞</span>
+            <span>2</span>
+          </div>
+          <div class="opinion">
+            <i class="el-icon-chat-dot-round"></i>
+            <span>评论</span>
+            <span>{{0}}</span>
+          </div>
+          <div class="more" @click="readRemark(index)" v-if="!pageNote[index].show">全部评论</div>
+          <div class="more2" @click="readRemark(index)" v-else>全部评论</div>
         </div>
 
-        <div class="communicate">
-          <div class="info">
-            <div class="like" v-if="false">
-              <i class="el-icon-star-on"></i>
-              <span>赞</span>
-              <span>2</span>
-            </div>
-            <div class="opinion">
-              <i class="el-icon-chat-dot-round"></i>
-              <span>评论</span>
-              <span>{{0}}</span>
-            </div>
-            <div class="more" @click="readRemark(index)" v-if="!pageNote[index].show">全部评论</div>
-            <div class="more2" @click="readRemark(index)" v-else>全部评论</div>
-          </div>
-
-          <div v-if="pageNote[index].show" class="show-area">
-            <el-avatar :size="50" :src="imgUrl"></el-avatar>
-            <el-input
-              type="textarea"
-              v-model="items.text"
-              placeholder="请输入内容"
-              :autosize="{minRows:2,maxRows:4}"
-            ></el-input>
-            <el-button class="send" type="primary" @click="sendMessage(index)">发送内容</el-button>
-          </div>
-          <div>
-            <div v-for="(newItems,newIndex) in user[index]" :key="newItems.id">
-              <remark-item>
-                <div slot="nickName">{{name}}</div>
-                <p slot="remark-content">{{user[index][newIndex].content}}</p>
-                <span slot="time" class="date">{{user[index][newIndex].time}}</span>
-                <span slot="reply" @click="remarkEvent()">回复</span>
-              </remark-item>
-              <reply-item v-if="false">
-                <div slot="nickName">{{2}}</div>
-                <p slot="reply-content">{{2}}</p>
-                <span slot="date" class="date">{{3}}</span>
-                <span slot="reply" @click="replyEvent()">回复</span>
-              </reply-item>
-            </div>
+        <div v-if="pageNote[index].show" class="show-area">
+          <el-avatar :size="50" :src="imgUrl"></el-avatar>
+          <el-input type="textarea" v-model="items.text" placeholder="请输入内容" :autosize="{minRows:2,maxRows:4}"></el-input>
+          <el-button class="send" type="primary" @click="sendMessage(index)">发送内容</el-button>
+        </div>
+        <div>
+          <div v-for="(newItems,newIndex) in user[userIndex+index]" :key="newItems.id">
+            <remark-item>
+              <div slot="nickName">{{name}}</div>
+              <p slot="remark-content">{{user[userIndex+index][newIndex].content}}</p>
+              <span slot="time" class="date">{{user[userIndex+index][newIndex].time}}</span>
+              <span slot="reply" @click="remarkEvent()">回复</span>
+            </remark-item>
+            <reply-item v-if="false">
+              <div slot="nickName">{{2}}</div>
+              <p slot="reply-content">{{2}}</p>
+              <span slot="date" class="date">{{3}}</span>
+              <span slot="reply" @click="replyEvent()">回复</span>
+            </reply-item>
           </div>
         </div>
       </div>
     </div>
-    <div class="block">
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="currentPage"
-        :page-sizes="[5,10,15,20]"
-        :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="pageTotal"
-      ></el-pagination>
-    </div>
   </div>
+  <div class="block">
+    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5,10,15,20]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pageTotal"></el-pagination>
+  </div>
+</div>
 </template>
 
 <script>
@@ -104,15 +83,12 @@ export default {
       i.name = JSON.parse(localStorage.getItem("user")).nickName;
       return i;
     });
-    console.log(this.topIndex);
-    // if (this.topIndex && this.user) {
-    //   [this.user[0], this.user[this.topIndex[0]]] = [
-    //     this.user[this.topIndex[0]],
-    //     this.user[0],
-    //   ];
-    // }
+
+   
   },
   updated() {
+    this.userIndex = (this.currentPage-1)*this.pageSize;
+    console.log(this.userIndex)
     localStorage.setItem("userInfo", JSON.stringify(this.user));
   },
   data() {
@@ -123,6 +99,7 @@ export default {
       pageNote: [],
       pageAll: [],
       pageTotal: 0,
+      userIndex:0,
 
       //评论该部分
       views: "",
@@ -141,8 +118,7 @@ export default {
       aIndex: this.$route.query.index,
       agree: 0,
       remark: 0,
-      imgUrl:
-        "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+      imgUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
     };
   },
 
@@ -234,11 +210,8 @@ export default {
       if (arrLen < maxLen) {
         for (let i = arrLen - 1; i < maxLen; i++) arr[i] = [];
       }
-
       
-      
-      let newIndex = (this.currentPage - 1)*this.currentPage+index;
-      arr[newIndex].push(obj);
+      arr[this.userIndex+index].push(obj);
 
       this.user = arr;
       localStorage.setItem("userInfo", JSON.stringify(this.user));
@@ -283,12 +256,14 @@ export default {
   margin-bottom: 0;
 }
 
-.article > .article-item {
+.article>.article-item {
   list-style: none;
 }
+
 .article:hover {
   box-shadow: 0 0 5px black;
 }
+
 .head {
   color: #494949;
   margin-bottom: 20px;
@@ -419,7 +394,7 @@ export default {
   text-align: left;
 }
 
-.bottom-remark > .el-avatar {
+.bottom-remark>.el-avatar {
   margin-right: 20px;
 }
 
@@ -443,8 +418,7 @@ export default {
   display: flex;
   margin: 20px 0 40px 0;
 }
-</style>
-<style>
+</style><style>
 .show-area .el-avatar,
 .show-area .el-textarea {
   margin-right: 20px;
