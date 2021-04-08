@@ -9,12 +9,6 @@
       style=" width: 30%;
               margin: 0 auto;"
     >
-      <!--
-      <div class="block">
-        
-        <el-avatar shape="circle" :size="80" :fit="fit" :src="url"></el-avatar>
-      </div>
-      -->
       <div class="block">
         <span class="changeAvatar">{{header}}</span>
         <el-upload
@@ -136,8 +130,6 @@ export default {
       this.imageUrl =
         "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png";
     }
-    // localStorage.removeItem('data')
-    // localStorage.removeItem('index')
   },
   mounted() {},
   updated() {

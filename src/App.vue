@@ -1,3 +1,7 @@
+<!--
+ * @Date: 2021-04-08 14:07:01
+ * @LastEditTime: 2021-04-08 15:42:42
+-->
 <template>
   <div id="app">
     <login v-if="!isLogin"></login>
@@ -7,47 +11,20 @@
 </template>
 
 <script>
-import Login from "./components/Login";
-import MainItemBar from "./components/MainItemBar";
-
-// import {
-//   Quill,
-//   quillEditor
-// } from "vue-quill-editor";
-
-// // 自定义字体大小
-// let Size = Quill.import("attributors/style/size");
-// Size.whitelist = ["10px", "12px", "14px", "16px", "18px", "20px"];
-// Quill.register(Size, true);
-
-// // 自定义字体类型
-// let fonts = [
-//   "SimSun",
-//   "SimHei",
-//   "Microsoft-YaHei",
-//   "KaiTi",
-//   "FangSong",
-//   "Arial",
-//   "Times-New-Roman",
-//   "sans-serif",
-//   "宋体",
-//   "黑体",
-// ];
-// let Font = Quill.import("formats/font");
-// Font.whitelist = fonts;
-// Quill.register(Font, true);
+import Login from './components/Login'
+import MainItemBar from './components/MainItemBar'
 
 export default {
-  name: "App",
+  name: 'App',
   created() {
     if (!this.isLogin) {
-      this.isLogin = false;
+      this.isLogin = false
     }
   },
   data() {
     return {
       isLogin: JSON.parse(localStorage.getItem('loginState')),
-    };
+    }
   },
   methods: {},
   components: {
@@ -55,7 +32,7 @@ export default {
     Login,
     // quillEditor,
   },
-};
+}
 </script>
 
 <style>
@@ -69,7 +46,12 @@ html,
   height: 100%;
   width: 100%;
 }
-
+.el-menu {
+  background: transparent;
+}
+.el-menu.el-menu--horizontal {
+  border-bottom-color: transparent;
+}
 blockquote {
   padding: 0;
   margin: 0;
