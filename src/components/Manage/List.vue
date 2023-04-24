@@ -18,20 +18,22 @@ export default {
 };
 </script>
 <style scoped>
-.list{
+.list {
   display: flex;
 }
 .list .left {
-  border-right:1px solid;
-  border-right-color:#e6e6e6;
+  border-right: 1px solid;
+  border-right-color: #e6e6e6;
 
   width: 20%;
   text-align: center;
 }
-.show{
-  width:80%;
-  padding:0 30px;
-  padding-top:40px;
+.show {
+  width: 80%;
+  padding: 0 30px;
+  padding-top: 40px;
+  box-sizing: border-box;
+  overflow: auto;
+  height: calc(100vh - 64px);
 }
-
 </style>
