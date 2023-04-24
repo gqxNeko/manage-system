@@ -93,7 +93,7 @@
 </template>
 
 <script>
-import ArticleItem from "../components/ArticleItem";
+import ArticleItem from "./ArticleItem";
 import { quillEditor } from "vue-quill-editor";
 
 export default {

@@ -11,7 +11,6 @@
   </el-menu>
 </template>
 <script>
-import Item from "./Item";
 export default {
   name: "MainItemBar",
   data() {
@@ -19,7 +18,7 @@ export default {
       home: "首页",
       message: "消息中心",
       system: "管理系统",
-      self: "个人中心",
+      // self: "个人中心",
     };
   },
   methods: {
@@ -32,10 +31,10 @@ export default {
 <style scoped>
 
 .el-menu {
-  position:fixed;
+  /* position:fixed; */
   width:100%;
-  z-index:999;
-  display: flex;
+  /* z-index:999; */
+  /* display: flex; */
   justify-content: flex-end;
   
 }

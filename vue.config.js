@@ -6,13 +6,14 @@ module.exports = {
   publicPath: process.env.NODE_ENV === "production" ? "././" : "./",
   outputDir: "dist",
   assetsDir: "static",
-  lintOnSave: true, // 是否开启eslint保存检测
-  productionSourceMap: true, // 是否在构建生产包时生成sourceMap
+  lintOnSave: false, // 是否开启eslint保存检测
+  productionSourceMap: false, // 是否在构建生产包时生成sourceMap
   chainWebpack: config => {
     config.resolve.alias
       .set("@", resolve("src"))
       .set("@v", resolve("src/views"))
       .set("@c", resolve("src/components"))
+      .set('@assets',resolve('src/assets'))
     config.optimization.runtimeChunk("single");
     config.module
       .rule('md')
@@ -23,6 +24,7 @@ module.exports = {
       .use('markdown-loader')
       .loader('markdown-loader')
       .end()
+
   },
   devServer: {
     // host: "localhost",
@@ -32,7 +34,7 @@ module.exports = {
     port: "8080",
     hot: true,
     /* 自动打开浏览器 */
-    open: false,
+    open: true,
     overlay: {
       warning: false,
       error: true

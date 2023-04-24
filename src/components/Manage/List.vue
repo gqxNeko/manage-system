@@ -1,7 +1,7 @@
 <template>
   <div class="list">
     <div class="left">
-      <item></item>
+      <list-item></list-item>
     </div>
     <div class="show">
       <router-view></router-view>
@@ -9,11 +9,11 @@
   </div>
 </template>
 <script>
-import Item from "../components/Item";
+import ListItem from "./ListItem";
 export default {
   name: "List",
   components: {
-    Item,
+    ListItem,
   },
 };
 </script>

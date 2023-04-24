@@ -3,35 +3,32 @@
  * @LastEditTime: 2021-04-08 15:42:42
 -->
 <template>
-  <div id="app">
-    <login v-if="!isLogin"></login>
-    <main-item-bar v-if="isLogin" />
-    <router-view id="show" v-if="isLogin" v-wechat-title="$route.meta.title"></router-view>
+  <div class="home">
+    <main-item-bar v-if="isLogin"></main-item-bar>
+    <router-view></router-view>
   </div>
+
 </template>
 
 <script>
-import Login from './components/Login'
-import MainItemBar from './components/MainItemBar'
-
+import MainItemBar from './components/MainItemBar.vue';
 export default {
   name: 'App',
-  created() {
-    if (!this.isLogin) {
-      this.isLogin = false
-    }
-  },
-  data() {
-    return {
-      isLogin: JSON.parse(localStorage.getItem('loginState')),
-    }
-  },
+
   methods: {},
   components: {
-    MainItemBar,
-    Login,
-    // quillEditor,
+    MainItemBar
   },
+  data () {
+    return {
+    }
+  },
+  computed: {
+    isLogin () {
+      return this.$store.state.isLogin
+    }
+  }
+
 }
 </script>
 
@@ -43,8 +40,12 @@ body {
 body,
 html,
 #app {
-  height: 100%;
+  height: 100vh;
   width: 100%;
+}
+.home {
+  height: 100vh;
+  overflow: hidden;
 }
 .el-menu {
   background: transparent;

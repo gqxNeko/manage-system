@@ -68,7 +68,7 @@
 <script>
 import {
   addQuillTitle
-} from '../assets/js/quill-title.js'
+} from '@assets/js/quill-title.js'
 
 export default {
   name: "UpLoad",

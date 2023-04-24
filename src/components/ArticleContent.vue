@@ -5,7 +5,7 @@
         <div>
           <h1 class="head">{{items.articleName}}</h1>
           <div class="name">作者：{{items.name}}</div>
-          <div class="content" :class="pageNote[index].fold?'fold':'unfold'" v-html="items.content">{{items.content}}</div>
+          <div class="content" :class="pageNote[index].fold?'fold':'unfold'" v-html="items.content"></div>
           <div class="show" @click="changeShow(index)" v-if="isShow(index)">{{pageNote[index].fold?'展开':'收起'}}</div>
         </div>
 
@@ -233,8 +233,11 @@ export default {
 <style scoped>
 .homePage {
   padding: 80px 0 50px 0 !important;
-  background: url('../assets/img/bg.jpg') center center;
-  /* background: linear-gradient(to left, rgba(255, 255, 255, 0.932), #409eff); */
+  height:calc(100vh - 64px);
+  box-sizing: border-box;
+  overflow: auto;
+  /* background: url('../assets/img/bg.jpg') center center; */
+  background: linear-gradient(to left, rgba(255, 255, 255, 0.932), #409eff);
 }
 
 .article {

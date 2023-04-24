@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import ReplyItem from "../components/ReplyItem";
+// import ReplyItem from "../components/ReplyItem";
 export default {
   name: "Message",
 
@@ -23,7 +23,7 @@ export default {
     this.message.splice(1, 1);
   },
   components: {
-    ReplyItem,
+    // ReplyItem,
   },
 };
 </script>

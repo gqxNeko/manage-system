@@ -2,172 +2,173 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 Vue.use(Vuex)
-
+const isLogin = sessionStorage.getItem('isLogin')
 export default new Vuex.Store({
   state: {
-    data: [{
-        date: "2020年05月01日 09:00:00",
+    data: [
+      {
+        date: '2020年05月01日 09:00:00',
 
-        articleName: "vue的学习之旅",
-        content: "vue好难啊，要学多久才能学完了，我快疯了！！！！啊啊啊！！！",
+        articleName: 'vue的学习之旅',
+        content: 'vue好难啊，要学多久才能学完了，我快疯了！！！！啊啊啊！！！',
         read: 1,
         remark: 0,
         maintain: 0,
-        id: 1,
-
+        id: 1
       },
       {
-        date: "2020年07月20日 10:00:00",
+        date: '2020年07月20日 10:00:00',
 
-        articleName: "v-model的使用方法",
-        content: "双向绑定就很虚浮",
+        articleName: 'v-model的使用方法',
+        content: '双向绑定就很虚浮',
         read: 1,
         remark: 0,
         maintain: 0,
-        id: 2,
+        id: 2
       },
       {
-        date: "2020年07月21日 12:00:00",
+        date: '2020年07月21日 12:00:00',
 
-        articleName: "学习这件事",
-        content: "学习的过程很煎熬，但是解决了问题会很有成就感",
+        articleName: '学习这件事',
+        content: '学习的过程很煎熬，但是解决了问题会很有成就感',
         read: 1,
         remark: 0,
         maintain: 0,
-        id: 3,
+        id: 3
       },
       {
-        date: "2019年12月16日 23:46:54",
+        date: '2019年12月16日 23:46:54',
 
-        articleName: "雪",
-        content: "下雪了呀，雪花还挺好看的",
+        articleName: '雪',
+        content: '下雪了呀，雪花还挺好看的',
         read: 1,
         remark: 0,
         maintain: 0,
-        id: 4,
-      }, {
-        date: "2020年08月01日 11:00:00",
-
-        articleName: "1",
-        content: "测试",
-        read: 1,
-        remark: 0,
-        maintain: 0,
-        id: 5,
+        id: 4
       },
       {
-        date: "2020年08月02日 11:00:00",
+        date: '2020年08月01日 11:00:00',
 
-        articleName: "2",
-        content: "测试",
+        articleName: '1',
+        content: '测试',
         read: 1,
         remark: 0,
         maintain: 0,
-        id: 6,
+        id: 5
       },
       {
-        date: "2020年08月03日 11:00:00",
+        date: '2020年08月02日 11:00:00',
 
-        articleName: "3",
-        content: "测试",
+        articleName: '2',
+        content: '测试',
         read: 1,
         remark: 0,
         maintain: 0,
-        id: 7,
+        id: 6
       },
       {
-        date: "2020年08月04日 11:00:00",
-        articleName: "4",
-        content: "测试",
+        date: '2020年08月03日 11:00:00',
+
+        articleName: '3',
+        content: '测试',
         read: 1,
         remark: 0,
         maintain: 0,
-        id: 8,
+        id: 7
       },
       {
-        date: "2020年08月05日 11:00:00",
-
-        articleName: "5",
-        content: "测试",
+        date: '2020年08月04日 11:00:00',
+        articleName: '4',
+        content: '测试',
         read: 1,
         remark: 0,
         maintain: 0,
-        id: 9,
+        id: 8
       },
       {
-        date: "2020年08月06日 11:00:00",
+        date: '2020年08月05日 11:00:00',
 
-        articleName: "6",
-        content: "测试",
+        articleName: '5',
+        content: '测试',
         read: 1,
         remark: 0,
         maintain: 0,
-        id: 10,
+        id: 9
       },
       {
-        date: "2020年08月07日 11:00:00",
+        date: '2020年08月06日 11:00:00',
 
-        articleName: "7",
-        content: "测试",
+        articleName: '6',
+        content: '测试',
         read: 1,
         remark: 0,
         maintain: 0,
-        id: 11,
+        id: 10
       },
       {
-        date: "2020年08月08日 11:00:00",
+        date: '2020年08月07日 11:00:00',
 
-        articleName: "8",
-        content: "测试",
+        articleName: '7',
+        content: '测试',
         read: 1,
         remark: 0,
         maintain: 0,
-        id: 12,
+        id: 11
       },
       {
-        date: "2020年08月09日 11:00:00",
+        date: '2020年08月08日 11:00:00',
 
-        articleName: "9",
-        content: "测试",
+        articleName: '8',
+        content: '测试',
         read: 1,
         remark: 0,
         maintain: 0,
-        id: 13,
+        id: 12
       },
       {
-        date: "2020年08月10日 11:00:00",
+        date: '2020年08月09日 11:00:00',
 
-        articleName: "10",
-        content: "测试",
+        articleName: '9',
+        content: '测试',
         read: 1,
         remark: 0,
         maintain: 0,
-        id: 14,
+        id: 13
       },
       {
-        date: "2020年08月11日 11:00:00",
+        date: '2020年08月10日 11:00:00',
 
-        articleName: "11",
-        content: "测试",
+        articleName: '10',
+        content: '测试',
         read: 1,
         remark: 0,
         maintain: 0,
-        id: 15,
+        id: 14
       },
       {
-        date: "2020年08月12日 11:00:00",
+        date: '2020年08月11日 11:00:00',
 
-        articleName: "12",
-        content: "测试",
+        articleName: '11',
+        content: '测试',
         read: 1,
         remark: 0,
         maintain: 0,
-        id: 16,
+        id: 15
       },
       {
-        date: "2008年06月04日 14:28:11",
+        date: '2020年08月12日 11:00:00',
 
-        articleName: "《心》书评",
+        articleName: '12',
+        content: '测试',
+        read: 1,
+        remark: 0,
+        maintain: 0,
+        id: 16
+      },
+      {
+        date: '2008年06月04日 14:28:11',
+
+        articleName: '《心》书评',
         content: `转载于豆瓣 --- 小小的肚兜
         
 有意的孤独者
@@ -210,11 +211,11 @@ export default new Vuex.Store({
         read: 1,
         remark: 0,
         maintain: 0,
-        id: 17,
+        id: 17
       },
       {
-        date: "2018年12月17日 17:02:42",
-        articleName: "《冷场》书评",
+        date: '2018年12月17日 17:02:42',
+        articleName: '《冷场》书评',
         content: `转载于豆瓣 --- 苏方
 
         李诞是我所认识的人中病得最重又最不需要担心的一个。这话没什么论据支撑，就跟梦里得的谕差不多。我跟他没说过几句话，还当面撒过谎，今年刚承认。签给我的书里他写：没你强，随便看看。我看他也撒了谎。就算一报还一报。
@@ -241,10 +242,14 @@ export default new Vuex.Store({
         read: 1,
         remark: 0,
         maintain: 0,
-        id: 18,
+        id: 18
       }
     ],
-
-
+    isLogin: isLogin != null ? isLogin : false
   },
+  mutations: {
+    setLoginState(currentState) {
+      this.state.isLogin = currentState
+    }
+  }
 })
