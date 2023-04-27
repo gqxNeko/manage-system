@@ -5,8 +5,10 @@
         <div>
           <h1 class="head">{{items.articleName}}</h1>
           <div class="name">作者：{{items.name}}</div>
-          <div class="content" :class="pageNote[index].fold?'fold':'unfold'" v-html="items.content"></div>
-          <div class="show" @click="changeShow(index)" v-if="isShow(index)">{{pageNote[index].fold?'展开':'收起'}}</div>
+          <div class="content" :class="pageNote[index].fold?'fold':'unfold'"
+            v-html="items.content"></div>
+          <div class="show" @click="changeShow(index)" v-if="isShow(index)">
+            {{pageNote[index].fold?'展开':'收起'}}</div>
         </div>
 
         <div class="communicate">
@@ -21,21 +23,27 @@
               <span>评论</span>
               <span>{{0}}</span>
             </div>
-            <div class="more" @click="readRemark(index)" v-if="!pageNote[index].show">全部评论</div>
+            <div class="more" @click="readRemark(index)"
+              v-if="!pageNote[index].show">全部评论</div>
             <div class="more2" @click="readRemark(index)" v-else>全部评论</div>
           </div>
 
           <div v-if="pageNote[index].show" class="show-area">
             <el-avatar :size="50" :src="imgUrl"></el-avatar>
-            <el-input type="textarea" v-model="items.text" placeholder="请输入内容" :autosize="{minRows:2,maxRows:4}"></el-input>
-            <el-button class="send" type="primary" @click="sendMessage(index)">发送内容</el-button>
+            <el-input type="textarea" v-model="items.text" placeholder="请输入内容"
+              :autosize="{minRows:2,maxRows:4}"></el-input>
+            <el-button class="send" type="primary"
+              @click="sendMessage(index)">发送内容</el-button>
           </div>
           <div>
-            <div v-for="(newItems,newIndex) in user[userIndex+index]" :key="newItems.id">
+            <div v-for="(newItems,newIndex) in user[userIndex+index]"
+              :key="newItems.id">
               <remark-item>
                 <div slot="nickName">{{name}}</div>
-                <p slot="remark-content">{{user[userIndex+index][newIndex].content}}</p>
-                <span slot="time" class="date">{{user[userIndex+index][newIndex].time}}</span>
+                <p slot="remark-content">
+                  {{user[userIndex+index][newIndex].content}}</p>
+                <span slot="time"
+                  class="date">{{user[userIndex+index][newIndex].time}}</span>
                 <span slot="reply" @click="remarkEvent()">回复</span>
               </remark-item>
               <reply-item v-if="false">
@@ -50,8 +58,11 @@
       </div>
     </div>
     <div class="block">
-      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5,10,15,20]" :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper" :total="pageTotal"></el-pagination>
+      <el-pagination @size-change="handleSizeChange"
+        @current-change="handleCurrentChange" :current-page="currentPage"
+        :page-sizes="[5,10,15,20]" :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="pageTotal"></el-pagination>
     </div>
   </div>
 </template>
@@ -61,7 +72,7 @@ import ReplyItem from './ReplyItem'
 import RemarkItem from './RemarkItem'
 export default {
   name: 'HomePage',
-  created() {
+  created () {
     if (!this.message || !this.curIndex) {
       this.message = this.$store.state.data
       this.curIndex = []
@@ -71,7 +82,7 @@ export default {
       this.user = []
     }
   },
-  mounted() {
+  mounted () {
     if (!this.curIndex.length) {
       this.sortDate(this.message, 'date')
     }
@@ -81,16 +92,16 @@ export default {
     this.message.map((i) => {
       i.fold = true
       i.show = false
-      i.name = JSON.parse(localStorage.getItem('user')).nickName
+      i.name = JSON.parse(localStorage.getItem('userInfo')).nickName
       return i
     })
   },
-  updated() {
+  updated () {
     this.userIndex = (this.currentPage - 1) * this.pageSize
     console.log(this.userIndex)
     localStorage.setItem('userInfo', JSON.stringify(this.user))
   },
-  data() {
+  data () {
     return {
       //分页部分
       currentPage: 1,
@@ -106,7 +117,7 @@ export default {
       currentName: '',
       currentTime: [],
       currentContent: [],
-      name: JSON.parse(localStorage.getItem('user')).nickName,
+      name: JSON.parse(localStorage.getItem('userInfo')).nickName,
 
       //存储数据的部分
       message: JSON.parse(localStorage.getItem('data')),
@@ -123,7 +134,7 @@ export default {
   },
 
   methods: {
-    isShow(index) {
+    isShow (index) {
       let newIndex = (this.currentPage - 1) * this.pageSize + index
       if (this.message[newIndex].content.length > 200) {
         return true
@@ -131,13 +142,13 @@ export default {
         return false
       }
     },
-    changeShow(index) {
+    changeShow (index) {
       let newIndex = (this.currentPage - 1) * this.pageSize + index
       this.message[newIndex].fold = !this.message[newIndex].fold
       this.getList(this.message, this.pageSize)
     },
     // isMore(index) {},
-    getList(arr, size) {
+    getList (arr, size) {
       let newArr = []
       let pageNum = 0
       let limit = Math.ceil((arr.length / size) * 1.0)
@@ -151,27 +162,27 @@ export default {
       this.pageNote = newArr[this.currentPage - 1]
       this.pageAll = newArr
     },
-    sortDate(obj, key) {
+    sortDate (obj, key) {
       return obj.sort(function (a, b) {
         let [x, y] = [a[key], b[key]]
         return x > y ? -1 : x < y ? 1 : 0
       })
     },
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.pageSize = val
       this.getList(this.message, this.pageSize)
     },
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.currentPage = val
       this.pageNote = this.pageAll[val - 1]
     },
-    readRemark(index) {
+    readRemark (index) {
       let newIndex = (this.currentPage - 1) * this.pageSize + index
       this.message[newIndex].show = !this.message[newIndex].show
       this.getList(this.message, this.pageSize)
     },
 
-    sendMessage(index) {
+    sendMessage (index) {
       this.clickIndex = index
       let date = new Date()
       let year = date.getFullYear()
@@ -216,10 +227,10 @@ export default {
       this.user = arr
       localStorage.setItem('userInfo', JSON.stringify(this.user))
     },
-    remarkEvent() {
+    remarkEvent () {
       console.log('回复评论')
     },
-    replyEvent() {
+    replyEvent () {
       console.log('回复消息')
     },
   },
@@ -233,14 +244,15 @@ export default {
 <style scoped>
 .homePage {
   padding: 80px 0 50px 0 !important;
-  height:calc(100vh - 64px);
+  height: calc(100vh - 64px);
   box-sizing: border-box;
   overflow: auto;
   /* background: url('../assets/img/bg.jpg') center center; */
-  background: linear-gradient(to left, rgba(255, 255, 255, 0.932), #409eff);
+  /* background: linear-gradient(to left, rgba(255, 255, 255, 0.932), #409eff); */
 }
 
 .article {
+  border: 1px solid rgba(0, 0, 0, 0.2);
   width: 600px;
   margin: 0 auto;
   background: white;

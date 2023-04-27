@@ -1,12 +1,13 @@
 <template>
   <el-menu :default-active="this.$route.path" :router="true" class="el-menu-demo" mode="horizontal">
-    <el-menu-item index="/home">{{home}}</el-menu-item>
-    <el-menu-item index="/message">
+    <el-menu-item index="/home/index">{{home}}</el-menu-item>
+    <el-menu-item index="/home/message">
       {{message}}
       <el-badge :value="1" :max="99" class="item"></el-badge>
     </el-menu-item>
-    <el-menu-item>
-      <a :href="getUrl()" target="_self">{{system}}</a>
+    <el-menu-item index="/home/list">
+      {{ system }}
+      <!-- <a :href="getUrl()" target="_self">{{system}}</a> -->
     </el-menu-item>
   </el-menu>
 </template>

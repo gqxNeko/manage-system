@@ -1,17 +1,19 @@
 <template>
   <div class="login">
+    <div class="title">博客系统</div>
     <div class="container">
       <el-form ref="form" :model="form" :rules="rules"
         style="width:80%;margin:0 auto;">
+        <el-form-item v-if="isRegister" prop="nickName">
+          <el-input v-model="form.nickName" placeholder="请输入昵称"></el-input>
+        </el-form-item>
         <el-form-item prop="userName">
           <el-input prefix-icon="el-icon-user" v-model="form.userName"
             placeholder="请输入账号"></el-input>
         </el-form-item>
-        <el-form-item v-if="isRegister" prop="nickName">
-          <el-input v-model="form.nickName" placeholder="请输入昵称"></el-input>
-        </el-form-item>
-        <el-form-item prop="passWord">
-          <el-input prefix-icon="el-icon-lock" v-model="form.passWord"
+
+        <el-form-item prop="password">
+          <el-input prefix-icon="el-icon-lock" v-model="form.password"
             show-password placeholder="请输入密码"></el-input>
         </el-form-item>
         <el-form-item v-if="isRegister" prop="confirmPassWord">
@@ -19,10 +21,11 @@
             placeholder="请再次输入密码"></el-input>
         </el-form-item>
         <el-form-item class="item-bottom">
-          <el-button type="text" size="normal" @click="login()">登录</el-button>
+          <el-button type="primary" size="normal"
+            @click="login()">登录</el-button>
           <el-button type="text" size="normal" v-if="!isRegister"
-            @click="register('form')">注册</el-button>
-          <el-button type="text" size="normal" v-else
+            @click="register('form')">没有账号，前往注册</el-button>
+          <el-button type="primary" size="normal" v-else
             @click="submit('form')">注册</el-button>
         </el-form-item>
       </el-form>
@@ -30,6 +33,8 @@
   </div>
 </template>
 <script>
+import { userLogin, userRegister } from '@api/api.js'
+import { setCookie } from '../utils/cookie'
 export default {
   name: 'Login',
   data () {
@@ -75,7 +80,7 @@ export default {
     let checkPass = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入密码'))
-      } else if (this.form.passWord !== value) {
+      } else if (this.form.password !== value) {
         callback(new Error('请输入相同的密码'))
       } else {
         callback()
@@ -83,18 +88,19 @@ export default {
     }
 
     return {
-      user: JSON.parse(localStorage.getItem('user')),
+      // user: JSON.parse(localStorage.getItem('user')),
+      user: '',
       isRegister: false,
       form: {
         userName: '',
-        passWord: '',
+        password: '',
         nickName: '',
         confirmPassWord: '',
       },
       rules: {
         userName: [{ validator: validName, trigger: ['blur', 'change'] }],
         nickName: [{ validator: validNickName, trigger: ['blur', 'change'] }],
-        passWord: [{ validator: validPass, trigger: ['blur', 'change'] }],
+        password: [{ validator: validPass, trigger: ['blur', 'change'] }],
         confirmPassWord: [
           { validator: checkPass, trigger: ['blur', 'change'] },
         ],
@@ -103,43 +109,58 @@ export default {
   },
   methods: {
     login () {
-      if (
-        this.user &&
-        this.form.userName == this.user.name &&
-        this.form.passWord == this.user.passWord
-      ) {
-        setTimeout(() => {
-          sessionStorage.setItem('isLogin',true)
-          this.$store.commit('setLoginState',true)
-          this.$router.push('/home')
-        }, 500);
-      } else {
-        this.$message('请先注册')
-        console.log('登录失败')
-        return false
-      }
+      this.isRegister = false
+      this.$refs.form.validate((validate) => {
+        if (validate) {
+          userLogin({
+            userName: this.form.userName,
+            password: this.form.password
+          }).then((res) => {
+            if (res.data.code !== 200) {
+              this.$message.error(res.data.msg)
+            } else {
+              setCookie('token', res.data.token, 7)
+              setCookie('secret', res.data.secret, 7)
+              setTimeout(() => {
+                this.$message.success(res.data.msg)
+                localStorage.setItem('userInfo', JSON.stringify(res.data.userInfo))
+                this.$store.commit('setLoginState', true)
+                this.$router.push('/home')
+              }, 500);
+
+            }
+          }).catch(e=>{
+            this.$message.error('服务器异常')
+          })
+        }
+      })
+
     },
     submit (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          let obj = {
-            name: this.form.userName,
+          const param = {
+            userName: this.form.userName,
             nickName: this.form.nickName,
-            passWord: this.form.passWord,
+            password: this.form.password,
           }
-          localStorage.setItem('user', JSON.stringify(obj))
-          this.$message({
-            type: 'success',
-            message: '注册成功，自动登录。。。',
+          userRegister(param).then(res => {
+            if (res.data.code == 200) {
+
+
+              setCookie('token', res.data.token, 7)
+              setCookie('secret', res.data.secret, 7)
+              setTimeout(() => {
+                this.$message.success(res.data.msg)
+                localStorage.setItem('userInfo', JSON.stringify(param))
+                this.$store.commit('setLoginState', true)
+                this.$router.push('/home')
+              }, 500);
+
+            } else {
+              this.$message.error(res.data.msg)
+            }
           })
-          setTimeout(() => {
-            sessionStorage.setItem('isLogin',true)
-            this.$store.commit('setLoginState',true)
-            // this.$parent.isLogin = true
-            this.$router.push('/home')
-          }, 2000)
-        } else {
-          return false
         }
       })
     },
@@ -153,39 +174,44 @@ export default {
 .login {
   height: 100%;
   box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   /* background: url('../assets/img/bg.jpg') center center; */
+}
+.title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
 }
 .container {
   /* padding: 40px 0 0 0; */
   width: 30%;
   margin: 0 auto;
   border-radius: 10px;
-  transform: translateY(50%);
   box-sizing: border-box;
   /* box-shadow: inset 0 0 10px rgb(3 56 109); */
 }
-</style>
-
-<style>
-.login .el-form-item {
+.login ::v-deep .el-form-item {
   margin-bottom: 32px;
 }
-.login .el-input__inner {
+.login ::v-deep .el-input__inner {
   border-radius: 8px;
   transition: 0.7s;
   height: auto;
   line-height: 40px;
 }
 
-.login .el-form .el-form-item__content {
+.login ::v-deep .el-form .el-form-item__content {
   display: flex;
   justify-content: space-between;
 }
-.login .item-bottom {
+.login ::v-deep .item-bottom {
   padding: 20px 0;
 }
-.login .el-input__inner:focus,
-.login .el-input__inner:hover {
+.login ::v-deep .el-input__inner:focus,
+.login ::v-deep .el-input__inner:hover {
   /* border: 1px solid rgba(102, 175, 233, 0.6);
   -webkit-box-shadow: 0 4px 4px rgba(0, 0, 0, 0.075),
     0 0 8px rgba(102, 175, 233, 0.6); */

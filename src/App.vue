@@ -3,21 +3,18 @@
  * @LastEditTime: 2021-04-08 15:42:42
 -->
 <template>
-  <div class="home">
-    <main-item-bar v-if="isLogin"></main-item-bar>
+  <div class="main-app">
     <router-view></router-view>
   </div>
 
 </template>
 
 <script>
-import MainItemBar from './components/MainItemBar.vue';
 export default {
   name: 'App',
 
   methods: {},
   components: {
-    MainItemBar
   },
   data () {
     return {
@@ -43,7 +40,7 @@ html,
   height: 100vh;
   width: 100%;
 }
-.home {
+.main-app {
   height: 100vh;
   overflow: hidden;
 }

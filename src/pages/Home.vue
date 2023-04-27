@@ -1,19 +1,18 @@
 <template>
   <div class="home">
-    <!-- <main-item-bar /> -->
-    <detail></detail>
-    <!-- <router-view id="show" v-wechat-title="$route.meta.title"></router-view> -->
+    <main-item-bar></main-item-bar>
+    <router-view></router-view>
   </div>
 
 </template>
 <script>
-// import MainItemBar from '../components/MainItemBar.vue';
-import Detail from "../components/ArticleContent"
+import ArticleContent from "../components/ArticleContent"
+import MainItemBar from "../components/MainItemBar.vue";
 export default {
   name: "Home",
   components: {
-    // MainItemBar,
-    Detail
+    ArticleContent,
+    MainItemBar
   },
 }
 </script>

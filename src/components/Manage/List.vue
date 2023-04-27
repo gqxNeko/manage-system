@@ -24,8 +24,6 @@ export default {
 .list .left {
   border-right: 1px solid;
   border-right-color: #e6e6e6;
-
-  width: 20%;
   text-align: center;
 }
 .show {

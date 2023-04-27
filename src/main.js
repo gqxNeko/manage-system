@@ -1,5 +1,6 @@
 import Vue from 'vue'
-
+// import 'babel-polyfill'
+// import 'es6-promise'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 

@@ -12,8 +12,10 @@ module.exports = {
     config.resolve.alias
       .set("@", resolve("src"))
       .set("@v", resolve("src/views"))
-      .set("@c", resolve("src/components"))
+      .set("@components", resolve("src/components"))
       .set('@assets',resolve('src/assets'))
+      .set('@api',resolve('src/api'))
+      .set('@utils',resolve('src/utils'))
     config.optimization.runtimeChunk("single");
     config.module
       .rule('md')
@@ -24,6 +26,8 @@ module.exports = {
       .use('markdown-loader')
       .loader('markdown-loader')
       .end()
+      .use('babel-loader')
+      .loader('babel-loader')
 
   },
   devServer: {

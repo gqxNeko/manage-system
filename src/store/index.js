@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
+import { loginStatus } from '../utils/jwt'
+import { getCookie } from '../utils/cookie'
 Vue.use(Vuex)
-const isLogin = sessionStorage.getItem('isLogin')
+// const isLogin = sessionStorage.getItem('isLogin')
 export default new Vuex.Store({
   state: {
     data: [
@@ -245,7 +246,7 @@ export default new Vuex.Store({
         id: 18
       }
     ],
-    isLogin: isLogin != null ? isLogin : false
+    isLogin: loginStatus(getCookie('token'),getCookie('secret'))
   },
   mutations: {
     setLoginState(currentState) {

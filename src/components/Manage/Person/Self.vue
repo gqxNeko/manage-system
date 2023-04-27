@@ -1,37 +1,31 @@
 <template>
   <div class="self">
-    <el-form
-      status-icon
-      ref="form"
-      :model="form"
-      :rules="rules"
-      label-width="80px"
-      style=" width: 30%;
-              margin: 0 auto;"
-    >
+    <el-form status-icon ref="form" :model="form" :rules="rules"
+      label-width="80px" style="width: 30%;margin: 0 auto;">
       <div class="block">
         <span class="changeAvatar">{{header}}</span>
-        <el-upload
-          class="avatar-uploader"
-          :on-preview="handlePreview"
+        <el-upload class="avatar-uploader" :on-preview="handlePreview"
           action="https://jsonplaceholder.typicode.com/posts/"
-          :show-file-list="true"
-          :on-success="handleAvatarSuccess"
-          :before-upload="beforeAvatarUpload"
-          :auto-upload="true"
-        >
+          :show-file-list="true" :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload" :auto-upload="true">
           <img v-if="imageUrl" :src="imageUrl" class="avatar" />
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </div>
 
       <el-form-item label="性别">
-        <el-radio v-model="radio" label="male">男</el-radio>
-        <el-radio v-model="radio" label="female">女</el-radio>
+        <el-radio-group v-model="form.sex">
+          <el-radio v-for="(item,index) in sexOptions" :label="item.value"
+            :key="item.label + index">{{ item.label }}</el-radio>
+        </el-radio-group>
+        <!-- <el-radio v-model="radio" label="male">男</el-radio>
+        <el-radio v-model="radio" label="female">女</el-radio> -->
       </el-form-item>
-
-      <el-form-item label="昵称" prop="name" required>
-        <el-input v-model="form.name" clearable></el-input>
+      <el-form-item label="账号" prop="userName" required>
+        <el-input v-model="form.userName" clearable></el-input>
+      </el-form-item>
+      <el-form-item label="昵称" prop="nickName" required>
+        <el-input v-model="form.nickName" clearable></el-input>
       </el-form-item>
       <el-form-item label="电子邮箱" prop="email" required>
         <el-input v-model="form.email" clearable></el-input>
@@ -43,36 +37,65 @@
         <el-input v-model="form.password" show-password clearable></el-input>
       </el-form-item>
       <el-form-item label="确认密码">
-        <el-input v-model="form.password2" show-password clearable></el-input>
+        <el-input v-model="form.confirmPassword" show-password
+          clearable></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit('form')">修改</el-button>
-        <el-button @click="reset('form')">再想想</el-button>
+        <!-- <el-button @click="reset('form')">再想想</el-button> -->
       </el-form-item>
     </el-form>
   </div>
 </template>
 <script>
+import { updateUserInfo } from '@api/api'
+import _deepClone from 'lodash'
 export default {
   name: "Self",
-  data() {
+  data () {
     return {
       self: "个人中心",
+      userInfo: JSON.parse(localStorage.getItem('userInfo')),
       imageUrl: localStorage.getItem("avatar"),
       header: "头像",
       id: "",
       fit: "fill",
       radio: "male",
       form: {
-        name: "",
-        sex: "",
+        id: '',
+        userName: '',
+        nickName: "",
+        sex: "male",
         email: "",
         phone: "",
         password: "",
-        password2: "",
+        confirmPassword: "",
       },
+      sexOptions: [
+        {
+          label: '男',
+          value: 'male'
+        },
+        {
+          label: '女',
+          value: 'femal'
+        }
+      ],
       rules: {
-        name: [
+        userName: [
+          {
+            required: true,
+            message: "请输入账号",
+            trigger: ["change", "blur"],
+          },
+          {
+            min: 1,
+            max: 10,
+            message: "请输入1到10个字符",
+            trigger: "blur",
+          },
+        ],
+        nickName: [
           {
             required: true,
             message: "请输入昵称",
@@ -120,52 +143,50 @@ export default {
             trigger: "blur",
           },
         ],
-        password2: [{}, {}],
+        confirmPassword: [{}, {}],
       },
     };
   },
-  created() {
+  created () {
     console.log(typeof this.imageUrl);
     if (!this.imageUrl) {
       this.imageUrl =
         "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png";
     }
+    this.form = this.userInfo
+    this.$set(this.form, 'password', '')
+    this.$set(this.form, 'confirmPassword', '')
   },
-  mounted() {},
-  updated() {
-    localStorage.setItem("avatar", this.imageUrl);
-  },
+  mounted () { },
   methods: {
-    onSubmit(formName) {
+    onSubmit (formName) {
+      let targetParam = JSON.parse(JSON.stringify(this.form))
+      delete targetParam.confirmPassword
+      console.log(targetParam)
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          if (this.form.password == this.form.password2) {
-            this.$message({
-              type: "success",
-              message: "修改完成",
-            });
-          } else {
-            this.$message.error("请输入相同的密码");
-            return false;
-          }
-        } else {
-          this.$alert("请注意输入正确的信息");
-          console.log("请填入相应的信息");
-          return false;
+          updateUserInfo(targetParam).then(res => {
+            console.log(res)
+            if (res?.data?.code == 200) {
+              this.$message.success(res.data.msg)
+            } else {
+              this.$message.error(res.data.msg)
+            }
+          })
         }
       });
     },
-    reset(formName) {
+    reset (formName) {
       this.$refs[formName].resetFields();
     },
-    handlePreview(file) {
+    handlePreview (file) {
       console.log(file);
     },
-    handleAvatarSuccess(res, file) {
+    handleAvatarSuccess (res, file) {
       console.log(res);
       this.imageUrl = URL.createObjectURL(file.raw);
     },
-    beforeAvatarUpload(file) {
+    beforeAvatarUpload (file) {
       const isJPG = file.type === "image/jpeg";
       const isLt2M = file.size / 1024 / 1024 < 2;
 
