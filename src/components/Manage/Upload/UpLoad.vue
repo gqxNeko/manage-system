@@ -1,58 +1,32 @@
 <template>
   <div class="upload">
-    <el-form
-      :model="ruleForm"
-      :rules="rules"
-      ref="ruleForm"
-      label-width="100px"
-      class="demo-ruleForm"
-    >
+    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px"
+      class="demo-ruleForm">
       <el-form-item label="文章名称" prop="articleName">
         <el-input v-model="ruleForm.articleName"></el-input>
       </el-form-item>
 
-      <el-form-item label="文章内容" prop="desc">
+      <el-form-item label="文章内容" prop="content">
 
-          <el-card style="height: 400px;">
-            <quill-editor
-              v-model="ruleForm.desc"
-              ref="myQuillEditor"
-              style="height: 280px;"
-              class="quill-editor"
-              :options="editorOption"
-            ></quill-editor>
-          </el-card>
+        <el-card style="height: 400px;">
+          <quill-editor v-model="ruleForm.content" ref="myQuillEditor"
+            style="height: 280px;" class="quill-editor"
+            :options="editorOption"></quill-editor>
+        </el-card>
 
       </el-form-item>
 
       <el-form-item label="即时发送" prop="autoSend">
-        <el-switch v-model="ruleForm.autoSend" active-color="#13ce68"></el-switch>
+        <el-switch v-model="ruleForm.autoSend"
+          active-color="#13ce68"></el-switch>
       </el-form-item>
       <el-form-item label="发送时间" :required="!ruleForm.autoSend">
         <el-col :span="11">
-          <el-form-item prop="date1" :required="!ruleForm.autoSend">
-            <el-date-picker
-              format="yyyy年MM月dd日"
-              value-format="yyyy年MM月dd日"
-              placeholder="选择日期"
-              v-model="ruleForm.date1"
-              style="width: 100%;"
-              :disabled="ruleForm.autoSend"
-              clearable
-            ></el-date-picker>
-          </el-form-item>
-        </el-col>
-        <el-col class="line" :span="2">-</el-col>
-        <el-col :span="11">
-          <el-form-item prop="date2" :required="!ruleForm.autoSend">
-            <el-time-picker
-              placeholder="选择时间"
-              value-format="HH:mm:ss"
-              v-model="ruleForm.date2"
-              style="width: 100%;"
-              :disabled="ruleForm.autoSend"
-              clearable
-            ></el-time-picker>
+          <el-form-item prop="publishTime" :required="!ruleForm.autoSend">
+            <el-date-picker type="datetime" placeholder="选择日期"
+              format="yyyy-MM-dd HH:mm:ss" value-format="yyyy-MM-dd HH:mm:ss"
+              v-model="ruleForm.publishTime" style="width: 100%;"
+              :disabled="ruleForm.autoSend" clearable></el-date-picker>
           </el-form-item>
         </el-col>
       </el-form-item>
@@ -69,21 +43,21 @@
 import {
   addQuillTitle
 } from '@assets/js/quill-title.js'
-
+import { addArticle } from '@api/api.js'
 export default {
   name: "UpLoad",
-  data() {
+  data () {
     return {
       editorOption: {
         placeholder: "请输入",
       },
-      data:JSON.parse(localStorage.getItem('data')),
+      userInfo: JSON.parse(localStorage.getItem('userInfo')) || {},
+      // data: JSON.parse(localStorage.getItem('data')),
       ruleForm: {
         articleName: "",
-        date1: "",
-        date2: "",
+        publishTime: "",
         autoSend: false,
-        desc: "",
+        content: "",
       },
       rules: {
         articleName: [
@@ -95,112 +69,78 @@ export default {
             trigger: "blur",
           },
         ],
-        date1: [
+        publishTime: [
           {
             trigger: "change",
           },
         ],
-        date2: [
-          {
-            trigger: "change",
-          },
-        ],
-        desc: [{ required: true, message: "请填写内容", trigger: "blur" }],
+        content: [{ required: true, message: "请填写内容", trigger: "blur" }],
       },
     };
   },
   methods: {
-    submitForm(formName) {
-      let This = this;
+    submitForm (formName) {
+      let target = JSON.parse(JSON.stringify(this.ruleForm))
+      if (target.autoSend) {
 
+        // debugger
+        const time = new Date().toLocaleString().replace(/\//g, '-')
+        const left = time.split(' ')[0]
+        const right = time.split(' ')[1]
+        const YEAR = left.split('-')[0]
+        let month = left.split('-')[1]
+        let day = left.split('-')[2]
+        if (month.length == 1) {
+          month = `0${month}`
+        }
+        if (day.length == 1) {
+          day = `0${day}`
+        }
+        target.publishTime = `${YEAR}-${month}-${day} ${right}`
+      }
+      target.authorId = this.userInfo.id || 1
+      delete target.autoSend
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          let time;
-          if (this.ruleForm.autoSend) {
-            time = new Date();
-            let year = time.getFullYear();
-            let month = time.getMonth() + 1;
-            let day = time.getDate();
-            let hour = time.getHours();
-            let minute = time.getMinutes();
-            let second = time.getSeconds();
-            let item = [month, hour, minute, second];
-            for (let index in item) {
-              if (item[index] < 10) {
-                item[index] = "0" + item[index];
-              }
-            }
-            [month, hour, minute, second] = item;
-            time = `${year}年${month}月${day}日 ${hour}:${minute}:${second}`;
-          } else {
-            time = this.ruleForm.date1 + " " + this.ruleForm.date2;
-          }
-          console.log(time);
-          let obj = {
-            date: time,
-            articleName: this.ruleForm.articleName,
-            content: this.ruleForm.desc,
-            read: 0,
-            remark: 0,
-            maintain: 0,
-            id:this.data.length+1,
-          };
+          addArticle(target).then(res => {
+            if (res?.data?.code == 200) {
 
-          // 将对象变成数组
-          let arr = JSON.parse(localStorage.getItem("data"));
-          let newObj = {};
-          for (let index in obj) {
-            newObj[index] = obj[index];
-          }
-          // 如何添加数据
-          let curIndex = JSON.parse(localStorage.getItem("index"));
-          if (curIndex.length > 0) {
-            arr.splice(curIndex.length, 0, newObj);
-          } else {
-            arr.unshift(newObj);
-          }
-          localStorage.setItem("data", JSON.stringify(arr));
-          this.$message({
-            type: "success",
-            message: "上传成功",
-          });
-          this.$router.push({
-            name: "Article",
-          });
+            } else {
+              this.$message.error(res.data.msg)
+            }
+          })
         } else {
           console.log("error submit!!");
           return false;
         }
       });
     },
-    resetForm(formName) {
+    resetForm (formName) {
       this.$refs[formName].resetFields();
     },
-    cancle() {
+    cancle () {
       this.$router.push({
         name: "Article",
       });
     },
   },
-  components:{
-    // quillEditor
+  components: {
   },
-  computed: {
-    editor() {
-      return this.$refs.myQuillEditor.quill;
-    },
-  },
-  mounted(){
-    addQuillTitle(); 
-
+  // computed: {
+  //   editor () {
+  //     return this.$refs.myQuillEditor.quill;
+  //   },
+  // },
+  mounted () {
+    addQuillTitle();
   }
 
 };
 </script>
 <style>
-  .upload .el-form-item{
-    margin-bottom:32px;
-  }
+.upload .el-form-item {
+  margin-bottom: 32px;
+}
 </style>
 <style scoped>
 .line {
@@ -208,6 +148,6 @@ export default {
 }
 
 .quill-editor {
-    line-height: normal;
+  line-height: normal;
 }
 </style>

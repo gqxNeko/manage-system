@@ -1,43 +1,45 @@
 <template>
   <div class="homePage">
-    <div v-for="(items,index) in pageNote" :key="items.id" class="article">
+    <div v-for="(item,index) in pageNote" :key="item.articleId"
+      class="article">
       <div class="article-item">
         <div>
-          <h1 class="head">{{items.articleName}}</h1>
-          <div class="name">作者：{{items.name}}</div>
-          <div class="content" :class="pageNote[index].fold?'fold':'unfold'"
-            v-html="items.content"></div>
-          <div class="show" @click="changeShow(index)" v-if="isShow(index)">
-            {{pageNote[index].fold?'展开':'收起'}}</div>
+          <h1 class="head">{{item.articleName}}</h1>
+          <!-- <div class="time">{{ item.date }}</div> -->
+          <div class="name">{{item.nickName}}</div>
+          <div class="content" :class="item.fold?'fold':'unfold'"
+            v-html="item.content"></div>
+          <div class="show" @click="item.fold=!item.fold" v-if="isShow(index)">
+            {{item.fold?'展开':'收起'}}</div>
         </div>
 
         <div class="communicate">
           <div class="info">
-            <div class="like" v-if="false">
+            <div class="like" v-if="true">
               <i class="el-icon-star-on"></i>
               <span>赞</span>
-              <span>2</span>
+              <span>{{ 0 }}</span>
             </div>
             <div class="opinion">
               <i class="el-icon-chat-dot-round"></i>
               <span>评论</span>
               <span>{{0}}</span>
             </div>
-            <div class="more" @click="readRemark(index)"
-              v-if="!pageNote[index].show">全部评论</div>
-            <div class="more2" @click="readRemark(index)" v-else>全部评论</div>
+            <div class="more" @click="item.show=!item.show" v-if="!item.show">全部评论
+            </div>
+            <div class="more2" @click="item.show=!item.show" v-else>全部评论</div>
           </div>
 
-          <div v-if="pageNote[index].show" class="show-area">
+          <div v-if="item.show" class="show-area">
             <el-avatar :size="50" :src="imgUrl"></el-avatar>
-            <el-input type="textarea" v-model="items.text" placeholder="请输入内容"
+            <el-input type="textarea" v-model="item.text" placeholder="请输入内容"
               :autosize="{minRows:2,maxRows:4}"></el-input>
             <el-button class="send" type="primary"
               @click="sendMessage(index)">发送内容</el-button>
           </div>
           <div>
-            <div v-for="(newItems,newIndex) in user[userIndex+index]"
-              :key="newItems.id">
+            <div v-for="(newitem,newIndex) in user[userIndex+index]"
+              :key="newIndex+new Date()">
               <remark-item>
                 <div slot="nickName">{{name}}</div>
                 <p slot="remark-content">
@@ -68,44 +70,18 @@
 </template>
 
 <script>
+import { insertItem, getArticleList } from '@api/api'
 import ReplyItem from './ReplyItem'
 import RemarkItem from './RemarkItem'
 export default {
   name: 'HomePage',
-  created () {
-    if (!this.message || !this.curIndex) {
-      this.message = this.$store.state.data
-      this.curIndex = []
-    }
-
-    if (!this.user) {
-      this.user = []
-    }
-  },
-  mounted () {
-    if (!this.curIndex.length) {
-      this.sortDate(this.message, 'date')
-    }
-    this.pageTotal = this.message.length
-    this.getList(this.message, this.pageSize)
-    let This = this
-    this.message.map((i) => {
-      i.fold = true
-      i.show = false
-      i.name = JSON.parse(localStorage.getItem('userInfo')).nickName
-      return i
-    })
-  },
-  updated () {
-    this.userIndex = (this.currentPage - 1) * this.pageSize
-    console.log(this.userIndex)
-    localStorage.setItem('userInfo', JSON.stringify(this.user))
-  },
   data () {
     return {
       //分页部分
       currentPage: 1,
       pageSize: 5,
+
+      //存储数据的部分
       pageNote: [],
       pageAll: [],
       pageTotal: 0,
@@ -119,9 +95,10 @@ export default {
       currentContent: [],
       name: JSON.parse(localStorage.getItem('userInfo')).nickName,
 
-      //存储数据的部分
-      message: JSON.parse(localStorage.getItem('data')),
-      curIndex: JSON.parse(localStorage.getItem('index')),
+
+      // message: [],
+      // curIndex: JSON.parse(localStorage.getItem('index')),
+      curIndex: [],
       topIndex: JSON.parse(localStorage.getItem('top')),
 
       index: 0,
@@ -132,35 +109,41 @@ export default {
         'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
     }
   },
-
+  created () {
+    this.init()
+  },
   methods: {
+    init () {
+      getArticleList().then(res => {
+        if (res?.data?.code == 200) {
+          this.pageNote = res.data.data.data.map((i) => {
+            i.fold = true
+            i.show = false
+            return i
+          })
+          this.pageTotal = res.data.data.total
+        }
+      })
+    },
     isShow (index) {
-      let newIndex = (this.currentPage - 1) * this.pageSize + index
-      if (this.message[newIndex].content.length > 200) {
+      if (this.pageNote[index].content.length > 200) {
         return true
       } else {
         return false
       }
     },
     changeShow (index) {
-      let newIndex = (this.currentPage - 1) * this.pageSize + index
-      this.message[newIndex].fold = !this.message[newIndex].fold
-      this.getList(this.message, this.pageSize)
+      this.pageNote[index].fold = !this.pageNote[index].fold
     },
     // isMore(index) {},
-    getList (arr, size) {
-      let newArr = []
-      let pageNum = 0
-      let limit = Math.ceil((arr.length / size) * 1.0)
-      while (pageNum < limit) {
-        newArr.push(
-          arr.slice(pageNum * this.pageSize, (pageNum + 1) * this.pageSize)
-        )
-        pageNum++
-      }
-
-      this.pageNote = newArr[this.currentPage - 1]
-      this.pageAll = newArr
+    getList (pageSize, offset) {
+      getArticleList({ pageSize, offset }).then(res => {
+        if (res?.data?.code == 200) {
+          console.log({ res })
+          this.pageNote = res.data.data.data
+          this.pageTotal = res.data.data.total
+        }
+      })
     },
     sortDate (obj, key) {
       return obj.sort(function (a, b) {
@@ -170,19 +153,17 @@ export default {
     },
     handleSizeChange (val) {
       this.pageSize = val
-      this.getList(this.message, this.pageSize)
+      this.getList(this.pageSize, (this.currentPage - 1) * val)
     },
     handleCurrentChange (val) {
       this.currentPage = val
-      this.pageNote = this.pageAll[val - 1]
+      this.getList(this.pageSize, (val - 1) * this.pageSize)
     },
     readRemark (index) {
-      let newIndex = (this.currentPage - 1) * this.pageSize + index
-      this.message[newIndex].show = !this.message[newIndex].show
-      this.getList(this.message, this.pageSize)
+      this.pageNote[index].show = !this.pageNote[index].show
     },
 
-    sendMessage (index) {
+    sendpageNote (index) {
       this.clickIndex = index
       let date = new Date()
       let year = date.getFullYear()
@@ -211,13 +192,13 @@ export default {
       }
       let arr = JSON.parse(localStorage.getItem('userInfo'))
       if (arr.length == 0) {
-        for (let ind in this.message) {
+        for (let ind in this.pageNote) {
           arr[ind] = []
         }
       }
 
       //上传文章时更新arr长度
-      let [arrLen, maxLen] = [arr.length, this.message.length]
+      let [arrLen, maxLen] = [arr.length, this.pageNote.length]
       if (arrLen < maxLen) {
         for (let i = arrLen - 1; i < maxLen; i++) arr[i] = []
       }
@@ -353,6 +334,7 @@ export default {
 .more2:hover {
   border-bottom: 2px solid;
   color: #409eff;
+  cursor: pointer;
 }
 
 .el-icon-star-on,

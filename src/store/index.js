@@ -9,162 +9,160 @@ export default new Vuex.Store({
     data: [
       {
         date: '2020年05月01日 09:00:00',
-
         articleName: 'vue的学习之旅',
         content: 'vue好难啊，要学多久才能学完了，我快疯了！！！！啊啊啊！！！',
-        read: 1,
+        readCount: 1,
         remark: 0,
         maintain: 0,
-        id: 1
+        // articleId: 1
       },
       {
         date: '2020年07月20日 10:00:00',
 
         articleName: 'v-model的使用方法',
         content: '双向绑定就很虚浮',
-        read: 1,
+        readCount: 1,
         remark: 0,
         maintain: 0,
-        id: 2
+        // articleId: 2
       },
       {
         date: '2020年07月21日 12:00:00',
 
         articleName: '学习这件事',
         content: '学习的过程很煎熬，但是解决了问题会很有成就感',
-        read: 1,
+        readCount: 1,
         remark: 0,
         maintain: 0,
-        id: 3
+        // articleId: 3
       },
       {
         date: '2019年12月16日 23:46:54',
 
         articleName: '雪',
         content: '下雪了呀，雪花还挺好看的',
-        read: 1,
+        readCount: 1,
         remark: 0,
         maintain: 0,
-        id: 4
+        // articleId: 4
       },
       {
         date: '2020年08月01日 11:00:00',
 
         articleName: '1',
         content: '测试',
-        read: 1,
+        readCount: 1,
         remark: 0,
         maintain: 0,
-        id: 5
+        // articleId: 5
       },
       {
         date: '2020年08月02日 11:00:00',
 
         articleName: '2',
         content: '测试',
-        read: 1,
+        readCount: 1,
         remark: 0,
         maintain: 0,
-        id: 6
+        // articleId: 6
       },
       {
         date: '2020年08月03日 11:00:00',
 
         articleName: '3',
         content: '测试',
-        read: 1,
+        readCount: 1,
         remark: 0,
         maintain: 0,
-        id: 7
+        // articleId: 7
       },
       {
         date: '2020年08月04日 11:00:00',
         articleName: '4',
         content: '测试',
-        read: 1,
+        readCount: 1,
         remark: 0,
         maintain: 0,
-        id: 8
+        // articleId: 8
       },
       {
         date: '2020年08月05日 11:00:00',
 
         articleName: '5',
         content: '测试',
-        read: 1,
+        readCount: 1,
         remark: 0,
         maintain: 0,
-        id: 9
+        // articleId: 9
       },
       {
         date: '2020年08月06日 11:00:00',
 
         articleName: '6',
         content: '测试',
-        read: 1,
+        readCount: 1,
         remark: 0,
         maintain: 0,
-        id: 10
+        // articleId: 10
       },
       {
         date: '2020年08月07日 11:00:00',
 
         articleName: '7',
         content: '测试',
-        read: 1,
+        readCount: 1,
         remark: 0,
         maintain: 0,
-        id: 11
+        // articleId: 11
       },
       {
         date: '2020年08月08日 11:00:00',
 
         articleName: '8',
         content: '测试',
-        read: 1,
+        readCount: 1,
         remark: 0,
         maintain: 0,
-        id: 12
+        // articleId: 12
       },
       {
         date: '2020年08月09日 11:00:00',
 
         articleName: '9',
         content: '测试',
-        read: 1,
+        readCount: 1,
         remark: 0,
         maintain: 0,
-        id: 13
+        // articleId: 13
       },
       {
         date: '2020年08月10日 11:00:00',
 
         articleName: '10',
         content: '测试',
-        read: 1,
+        readCount: 1,
         remark: 0,
         maintain: 0,
-        id: 14
+        // articleId: 14
       },
       {
         date: '2020年08月11日 11:00:00',
 
         articleName: '11',
         content: '测试',
-        read: 1,
+        readCount: 1,
         remark: 0,
         maintain: 0,
-        id: 15
+        // articleId: 15
       },
       {
         date: '2020年08月12日 11:00:00',
-
         articleName: '12',
         content: '测试',
-        read: 1,
+        readCount: 1,
         remark: 0,
         maintain: 0,
-        id: 16
+        // articleId: 16
       },
       {
         date: '2008年06月04日 14:28:11',
@@ -209,10 +207,10 @@ export default new Vuex.Store({
 请相信我，我的心情并非压抑郁闷，或者忿忿不平。这些只是孤独的一次演习。从生到死。
 
 先生终于死去了，也许因为他终于找到了可以倾吐的对象，可以无憾。在拒不相信小人物的孤独的国度，我们还在继续周而复始地孤独。`,
-        read: 1,
+        readCount: 1,
         remark: 0,
         maintain: 0,
-        id: 17
+        // articleId: 17
       },
       {
         date: '2018年12月17日 17:02:42',
@@ -240,10 +238,10 @@ export default new Vuex.Store({
           一点题外话是， 作家出书是事实， 而李诞出书成了现象。 这仍然是对话者的乱闯， 梦想家在狂欢。 不如就凯撒的归凯撒， 上帝的归上帝， 演员的归演员， 李诞的归李诞吧。
 
           已经有太多小说不从生活中来了。 更多的小说从阅读中来， 从流行和教化中来。 于是早期作品往往是新的， 之后很难不越来越旧。 李诞是生活着的， 能够与这股吞噬对抗到底的作家称得上伟大， 因为疲倦早晚弥漫开来， 仿佛时间、 影子和鲸。 希望雪国长在， 大鱼不死， 希望李诞不会太快疲倦。 `,
-        read: 1,
+        readCount: 1,
         remark: 0,
         maintain: 0,
-        id: 18
+        // articleId: 18
       }
     ],
     isLogin: loginStatus(getCookie('token'),getCookie('secret'))

@@ -44,12 +44,6 @@ html,
   height: 100vh;
   overflow: hidden;
 }
-.el-menu {
-  background: transparent;
-}
-.el-menu.el-menu--horizontal {
-  border-bottom-color: transparent;
-}
 blockquote {
   padding: 0;
   margin: 0;

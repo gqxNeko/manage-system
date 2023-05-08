@@ -38,7 +38,6 @@ const routes = [
   },
   {
     path: '/home',
-    name: 'Home',
     component: Home,
     children: [
       {

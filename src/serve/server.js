@@ -24,12 +24,6 @@ function generateToken(data, secret) {
   return token
 }
 
-//解密token
-// function getDecryptToken(token, secret) {
-//   let data = jwt.verify(token, secret)
-//   return data
-// }
-
 // 连接mysql数据库
 const connection = require('./mysql')
 
@@ -254,7 +248,6 @@ app.post('/userRegister', (req, res) => {
 
 // 修改用户
 app.post('/updateUser', (req, res) => {
-  // res.writeHead(200, { 'Content-Type': 'application/json;charset=utf-8' })
   // 判断是否重名
   const searchSql = `select * from loginInfo where nickName='${req.body.nickname}' or userName='${req.body.userName}'`
 
@@ -276,7 +269,7 @@ app.post('/updateUser', (req, res) => {
   userName='${req.body.userName}',
   password='${req.body.password}'
   where id=${req.body.id}`
-  
+
   // 传的密码为空 不修改密码
   if (req.body.password == '') {
     updateSql = `update loginInfo set nickName='${req.body.nickName}',
@@ -286,10 +279,185 @@ app.post('/updateUser', (req, res) => {
 
   connection.query(updateSql, (err, data) => {
     if (err) {
-      console.log(err)
       res.json({ code: 500, msg: '修改失败' })
     } else {
       res.json({ code: 200, msg: '修改成功' })
+    }
+  })
+})
+
+// 获取文章列表 -- 所有文章、当前用户文章、搜索后的文章、分页文章
+app.get('/getArticleList', (req, res) => {
+  const pageSize = req.query.pageSize
+  const start = req.query.offset
+  const id = req.query.id
+  const key = req.query.key
+
+  let searchAll = `select * from article as a,loginInfo as b where a.authorId = b.id  order by articleId desc`
+  let total = 0
+  let flag = true
+  if (id) {
+    let leftPart = `select * from article as a,loginInfo as b where a.authorId = ${id} and b.id = ${id}`
+    let middlePart = ''
+    let rightPart = ` order by articleId desc`
+    if (key) {
+      middlePart = ` and a.articleName like '%${key}%'`
+    }
+    searchAll = leftPart + middlePart + rightPart
+  }
+  connection.query(searchAll, (err, data) => {
+    if (err) {
+      res.json({ code: 500, msg: '文章列表查询失败！' })
+      flag = false
+    } else {
+      total = data.length
+    }
+  })
+  if (!flag) {
+    return
+  }
+
+  let searchSql = `select * from article as a,loginInfo as b where a.authorId = b.id order by articleId desc  limit ${start},${pageSize}`
+  if (id) {
+    let leftPart = `select * from article as a,loginInfo as b where a.authorId = ${id} and b.id = ${id}`
+    let middlePart = ''
+    let rightPart = ` order by articleId desc  limit ${start},${pageSize}`
+    if (key) {
+      middlePart = ` and a.articleName like '%${key}%'`
+    }
+    searchSql = leftPart + middlePart + rightPart
+  }
+  connection.query(searchSql, (err, data) => {
+    if (err) {
+      res.json({ code: 500, msg: '文章列表查询失败！' })
+    } else {
+      const result = Object.assign({}, { data }, { total: total })
+      res.json({ code: 200, data: result, msg: '查询成功' })
+    }
+  })
+})
+
+// 新增文章
+app.post('/addArticle', (req, res) => {
+  // console.log(req.body)
+  let flag = true
+
+  const addSql = `insert into article(articleName,content,readCount,remark,maintain,authorId,publishTime)
+  values(
+    '${req.body.articleName}',
+    '${req.body.content}',
+    0,
+    0,
+    0,
+    '${req.body.authorId}',
+    '${req.body.publishTime}'
+    );`
+  connection.query(addSql, (err, data) => {
+    if (err) {
+      res.json({ code: 500, msg: '添加失败，发生未知错误' })
+      flag = false
+    }
+  })
+  if (flag) {
+    res.json({ code: 200, msg: '添加成功' })
+  }
+})
+
+// // 临时接口
+// app.post('/insertArticle', (req, res) => {
+//   // console.log(req.body)
+//   const len = req.body.length
+//   const list = req.body
+//   let flag = true
+
+//   // sql如何批量插入
+//   for (let i = 0; i < len && flag; i++) {
+//     const addSql = `insert into article(articleName,content,readCount,remark,maintain)
+//   values(
+//     '${list[i].articleName}',
+//     '${list[i].content}',
+//     '${list[i].readCount}',
+//     '${list[i].remark}',
+//     '${list[i].maintain}'
+//     );`
+//     connection.query(addSql, (err, data) => {
+//       if (err) {
+//
+//         res.json({ code: 500, msg: '添加失败，发生未知错误' })
+//         flag = false
+//       }
+//     })
+//   }
+//   if (flag) {
+//     res.json({ code: 200, msg: '添加成功' })
+//   }
+// })
+
+// 修改置顶
+app.post('/updateTop', (req, res) => {
+  let flag = true
+  const updateSql = `update loginInfo set topId = ${req.body.articleId} where id = ${req.body.id}`
+  connection.query(updateSql, (err, data) => {
+    if (err) {
+      res.json({ code: 500, msg: '置顶失败，发生未知错误' })
+      flag = false
+    }
+  })
+  if (flag) {
+    if (req.body.articleId) {
+      res.json({ code: 200, msg: '置顶成功' })
+    } else {
+      res.json({ code: 200, msg: '取消置顶成功' })
+    }
+  }
+})
+
+// 修改文章
+app.post('/updateArticle', (req, res) => {
+  let updateSql = `update article set articleName='${req.body.articleName}',
+  content='${req.body.content}'
+  where articleId=${req.body.id}`
+
+  connection.query(updateSql, (err, data) => {
+    if (err) {
+      res.json({ code: 500, msg: '修改失败' })
+    } else {
+      res.json({ code: 200, msg: '修改成功' })
+    }
+  })
+})
+
+// 删除文章
+app.post('/deleteArticle', (req, res) => {
+  // res.writeHead(200, { 'Content-Type': 'application/json;charset=utf-8' })
+  let curId = JSON.parse(req.body.id)
+  // 支持删除多个
+  let mulDelFlag = false
+  if (curId !== null && typeof curId == 'object') {
+    mulDelFlag = true
+  }
+
+  let delSql = `delete from article where articleId=${JSON.parse(req.body.id)}`
+
+  if (mulDelFlag) {
+    const ids = JSON.parse(req.query.id)
+    let str = `delete from article where articleId=`
+    const len = ids.length
+    ids.forEach((item, index) => {
+      if (index < len - 1) {
+        str += item + ' or articleId='
+      } else {
+        str += item
+      }
+    })
+    delSql = str
+  }
+
+  connection.query(delSql, (err, data) => {
+    if (err) {
+      res.json({ code: 500, msg: '删除失败' })
+    } else {
+      res.json({ code: 200, msg: '删除成功' })
     }
   })
 })
@@ -300,7 +468,7 @@ app.get('/userLogout', (req, res) => {
   res.json({ code: 200, msg: '注销成功' })
 })
 
-const server = app.listen(2200, () => {
+const server = app.listen(2300, () => {
   const address = server.address().address
   const port = server.address().port
   console.log({ address, port })

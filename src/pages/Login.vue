@@ -3,18 +3,18 @@
     <div class="title">博客系统</div>
     <div class="container">
       <el-form ref="form" :model="form" :rules="rules"
-        style="width:80%;margin:0 auto;">
+        style="width:80%;margin:0 auto;" >
         <el-form-item v-if="isRegister" prop="nickName">
           <el-input v-model="form.nickName" placeholder="请输入昵称"></el-input>
         </el-form-item>
         <el-form-item prop="userName">
           <el-input prefix-icon="el-icon-user" v-model="form.userName"
-            placeholder="请输入账号"></el-input>
+            placeholder="请输入账号" @keyup.native.enter="login()"></el-input>
         </el-form-item>
 
         <el-form-item prop="password">
           <el-input prefix-icon="el-icon-lock" v-model="form.password"
-            show-password placeholder="请输入密码"></el-input>
+            show-password placeholder="请输入密码" @keyup.native.enter="login()"></el-input>
         </el-form-item>
         <el-form-item v-if="isRegister" prop="confirmPassWord">
           <el-input v-model="form.confirmPassWord" show-password
@@ -146,8 +146,6 @@ export default {
           }
           userRegister(param).then(res => {
             if (res.data.code == 200) {
-
-
               setCookie('token', res.data.token, 7)
               setCookie('secret', res.data.secret, 7)
               setTimeout(() => {

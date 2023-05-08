@@ -12,15 +12,15 @@
         </span>
         <span>
           <i class="iconfont icon-ico_yueduliang"></i>
-          <slot name="read">12</slot>
+          <slot name="read">0</slot>
         </span>
         <span>
           <i class="iconfont icon-pinglun"></i>
-          <slot name="remark">1</slot>
+          <slot name="remark">0</slot>
         </span>
         <span>
           <i class="iconfont icon-shoucang"></i>
-          <slot name="maintain">1</slot>
+          <slot name="maintain">0</slot>
         </span>
       </div>
       <div class="right">

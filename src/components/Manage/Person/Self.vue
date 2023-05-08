@@ -18,41 +18,64 @@
           <el-radio v-for="(item,index) in sexOptions" :label="item.value"
             :key="item.label + index">{{ item.label }}</el-radio>
         </el-radio-group>
-        <!-- <el-radio v-model="radio" label="male">男</el-radio>
-        <el-radio v-model="radio" label="female">女</el-radio> -->
       </el-form-item>
-      <el-form-item label="账号" prop="userName" required>
+      <el-form-item label="账号" prop="userName">
         <el-input v-model="form.userName" clearable></el-input>
       </el-form-item>
-      <el-form-item label="昵称" prop="nickName" required>
+      <el-form-item label="昵称" prop="nickName">
         <el-input v-model="form.nickName" clearable></el-input>
       </el-form-item>
-      <el-form-item label="电子邮箱" prop="email" required>
+      <el-form-item label="电子邮箱" prop="email">
         <el-input v-model="form.email" clearable></el-input>
       </el-form-item>
-      <el-form-item label="手机号" prop="phone" required>
+      <el-form-item label="手机号" prop="phone">
         <el-input v-model.number="form.phone" clearable></el-input>
       </el-form-item>
-      <el-form-item label="修改密码">
-        <el-input v-model="form.password" show-password clearable></el-input>
+      <el-form-item label="修改密码" prop="password"
+        :required="form.password.length?true:false">
+        <el-input v-model="form.password" show-password clearable
+          @clear="handleClear()"></el-input>
       </el-form-item>
-      <el-form-item label="确认密码">
+      <el-form-item label="确认密码" prop="confirmPassword"
+        :required="form.password.length?true:false"
+        v-show="form.password.length">
         <el-input v-model="form.confirmPassword" show-password
           clearable></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit('form')">修改</el-button>
-        <!-- <el-button @click="reset('form')">再想想</el-button> -->
       </el-form-item>
     </el-form>
   </div>
 </template>
 <script>
 import { updateUserInfo } from '@api/api'
+
 import _deepClone from 'lodash'
 export default {
   name: "Self",
+
   data () {
+    let validPass = (rule, value, callback) => {
+      console.log('pass:', { value })
+      if (this.form.password !== value) {
+        callback(new Error('请输入相同的密码'))
+      } else if (value.length > 0 && (value.length < 6 || value.length > 12)) {
+        callback(new Error('请输入6~12位密码'))
+      } else {
+        callback()
+      }
+    }
+    // let checkPass = (rule, value, callback) => {
+    //   console.log('confirmPass:', { value })
+    //   if (this.form.password !== value) {
+    //     callback(new Error('请输入相同的密码'))
+    //   } else if (value.length < 6 || value.length > 12) {
+    //     callback(new Error('请输入3~12位密码'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
     return {
       self: "个人中心",
       userInfo: JSON.parse(localStorage.getItem('userInfo')),
@@ -133,22 +156,19 @@ export default {
         ],
         password: [
           {
-            message: "请输入密码",
-            trigger: "blur",
-          },
-          {
-            min: 6,
-            max: 16,
-            message: "请输入6至16位字符",
-            trigger: "blur",
+            validator: validPass,
+            trigger: ["blur", "change"],
           },
         ],
-        confirmPassword: [{}, {}],
+        confirmPassword: [
+          {
+            validator: validPass,
+            trigger: ['change', 'blur']
+          }]
       },
     };
   },
   created () {
-    console.log(typeof this.imageUrl);
     if (!this.imageUrl) {
       this.imageUrl =
         "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png";
@@ -159,14 +179,18 @@ export default {
   },
   mounted () { },
   methods: {
+
+    handleClear () {
+      this.form.password = ''
+      this.form.confirmPassword = ''
+    },
     onSubmit (formName) {
       let targetParam = JSON.parse(JSON.stringify(this.form))
       delete targetParam.confirmPassword
-      console.log(targetParam)
       this.$refs[formName].validate((valid) => {
+        console.log(valid)
         if (valid) {
           updateUserInfo(targetParam).then(res => {
-            console.log(res)
             if (res?.data?.code == 200) {
               this.$message.success(res.data.msg)
             } else {
